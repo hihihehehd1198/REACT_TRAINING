@@ -2,11 +2,14 @@ import React, { Fragment, useState } from "react";
 import { connect } from "react-redux/es/exports";
 import { Link } from "react-router-dom";
 import { setAlert } from "../../actions/alert";
+import propTypes from "prop-types";
+import { register } from "../../actions/auth";
+// import authReducer from "../../reducers/auth";
 // import { Link } from "react-router-dom";
 // import { Fragment } from "react";
 // import axios from "axios";
-import { createUser } from "../../service/userController";
-const Register = (props) => {
+// import { createUser } from "../../service/userController";
+const Register = ({ setAlert, register }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -20,20 +23,21 @@ const Register = (props) => {
   const onSubmit = async (e) => {
     e.preventDefault();
     if (password !== password2) {
-      props.setAlert("password do not match", "danger");
+      setAlert("Passwords do not match", "danger");
     } else {
-      const params = {
-        name: name,
-        email: email,
-        password: password,
-      };
-      await createUser(JSON.stringify(params))
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      // const params = {
+      //   name: name,
+      //   email: email,
+      //   password: password,
+      // };
+      // await createUser(JSON.stringify(params))
+      //   .then((res) => {
+      //     console.log(res);
+      //   })
+      //   .catch((err) => {
+      //     console.error(err);
+      //   });
+      register({ name, email, password });
     }
   };
   return (
@@ -95,4 +99,10 @@ const Register = (props) => {
   );
 };
 
-export default connect(null, { setAlert })(Register);
+Register.propTypes = {
+  setAlert: propTypes.func.isRequired,
+  register: propTypes.func.isRequired,
+};
+
+export default connect(null, { setAlert, register })(Register);
+// export default Register

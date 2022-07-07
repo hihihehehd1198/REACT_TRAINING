@@ -38,6 +38,7 @@ const Login = ({ login, isAuthenticated }) => {
             placeholder="Email Address"
             name="email"
             required
+            value={email}
             onChange={onChange}
           />
         </div>
@@ -48,6 +49,7 @@ const Login = ({ login, isAuthenticated }) => {
             name="password"
             required
             onChange={onChange}
+            value={password}
           />
         </div>
         <input type="submit" className="btn btn-primary" value="Login" />

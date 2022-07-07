@@ -46,7 +46,7 @@ const Register = ({ setAlert, register }) => {
       <p className="lead">
         <i className="fas fa-user"></i> Create Your Account
       </p>
-      <form className="form" action="create-profile.html" onSubmit={onSubmit}>
+      <form className="form" onSubmit={onSubmit}>
         <div className="form-group">
           <input
             value={name}
@@ -93,7 +93,7 @@ const Register = ({ setAlert, register }) => {
         <input type="submit" className="btn btn-primary" value="Register" />
       </form>
       <p className="my-1">
-        Already have an account? <Link to="login">Sign In</Link>
+        Already have an account? <Link to="/login">Sign In</Link>
       </p>
     </Fragment>
   );

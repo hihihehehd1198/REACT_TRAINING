@@ -11,6 +11,10 @@ import { loadUser } from "./app/actions/auth";
 // redux
 import { Provider } from "react-redux";
 import setAuthToken from "./app/utils/setAuthToken";
+import DashBoard from "./app/component/dashboard/DashBoard";
+import PrivateRoute from "./app/component/routing/PrivateRoute";
+import CreateProfile from "./app/component/profile/CreateProfile";
+import editExperience from "./app/component/profile/editExprience";
 if (localStorage.token) {
   setAuthToken(localStorage.token);
 }
@@ -25,9 +29,17 @@ function App() {
         <section className="container">
           <Alert />
           <Switch>
+            <PrivateRoute exact path="/dashboard" component={DashBoard} />
             <Route exact path="/" component={Landing} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
+            <Route exact path="/create-profile" component={CreateProfile} />
+            <Route exact path="/edit-profile" component={CreateProfile} />
+            <Route
+              exact
+              path="/edit-experience"
+              component={editExperience}
+            ></Route>
           </Switch>
         </section>
       </Router>

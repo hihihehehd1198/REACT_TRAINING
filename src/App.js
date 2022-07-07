@@ -1,5 +1,10 @@
 import { useEffect } from "react";
-import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import {
+  Route,
+  BrowserRouter as Router,
+  Switch,
+  Redirect,
+} from "react-router-dom";
 import "./App.css";
 import Login from "./app/component/auth/login";
 import Register from "./app/component/auth/register";
@@ -15,6 +20,9 @@ import DashBoard from "./app/component/dashboard/DashBoard";
 import PrivateRoute from "./app/component/routing/PrivateRoute";
 import CreateProfile from "./app/component/profile/CreateProfile";
 import editExperience from "./app/component/profile/editExprience";
+import ListProfile from "./app/component/profile/ListProfile";
+import Profile from "./app/component/profile/Profile";
+
 if (localStorage.token) {
   setAuthToken(localStorage.token);
 }
@@ -22,6 +30,7 @@ function App() {
   useEffect(() => {
     store.dispatch(loadUser());
   }, []);
+
   return (
     <Provider store={store}>
       <Router>
@@ -35,6 +44,8 @@ function App() {
             <Route exact path="/register" component={Register} />
             <Route exact path="/create-profile" component={CreateProfile} />
             <Route exact path="/edit-profile" component={CreateProfile} />
+            <Route exact path="/profile" component={ListProfile} />
+            <Route exact path="/profile/:id" component={Profile} />
             <Route
               exact
               path="/edit-experience"

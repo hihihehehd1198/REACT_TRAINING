@@ -25,7 +25,7 @@ const DashBoard = ({
     if (user) {
       getListProfile();
     }
-  }, [user, resetKey.current]);
+  }, [user, resetKey.current, loading]);
   const getListProfile = () => {
     dispatch(getProfileWithId(user["user"]["_id"]));
   };

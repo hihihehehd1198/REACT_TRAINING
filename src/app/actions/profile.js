@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { setAlert } from "./alert";
+import { loadUser } from "./auth";
 
 import {
   ACCOUNT_DELETED,
@@ -43,10 +44,10 @@ export const getProfileWithId = (id) => async (dispatch) => {
 
 //get all profile
 export const getAllProfile = () => async (dispatch) => {
+  dispatch({ type: CLEAR_PROFILE });
   try {
     // dispatch(loadUser());
-
-    const res = await axios.get("/api/profile/");
+    const res = await axios.get("/api/profile/findall");
     dispatch({
       type: GET_PROFILES,
       payload: res.data,
@@ -242,6 +243,27 @@ export const deleteCurrentAccount = (history) => async (dispatch) => {
     });
     dispatch(setAlert("Account has Removed", "success"));
     history.push("/login");
+  } catch (err) {
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      errors.forEach((error) => dispatch(setAlert(error.msg, "danger")));
+    }
+    dispatch({
+      type: PROFILE_ERROR,
+    });
+  }
+};
+
+//find profile with user id
+export const findProfileWithUserId = (id) => async (dispatch) => {
+  dispatch(loadUser());
+  try {
+    const res = await axios.get(`/api/profile/${id}`);
+    dispatch({
+      type: GET_PROFILE,
+      payload: res.data,
+    });
   } catch (err) {
     const errors = err.response.data.errors;
 

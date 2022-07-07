@@ -19,7 +19,7 @@ export const login =
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "type": "configHeader",
+        type: "configHeader",
       },
     };
     const body = JSON.stringify({ email, password });
@@ -44,7 +44,7 @@ export const login =
   };
 
 // Load User
-export const loadUser = () => async (dispatch) => {
+export const loadUser = (history) => async (dispatch) => {
   if (localStorage.token) {
     setAuthToken(localStorage.token);
   }
@@ -58,6 +58,7 @@ export const loadUser = () => async (dispatch) => {
     dispatch({
       type: AUTH_ERROR,
     });
+    // history.push("/login");
   }
 };
 //Register User

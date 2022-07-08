@@ -22,6 +22,8 @@ import CreateProfile from "./app/component/profile/CreateProfile";
 import editExperience from "./app/component/profile/editExprience";
 import ListProfile from "./app/component/profile/ListProfile";
 import Profile from "./app/component/profile/Profile";
+import listPost from "./app/component/posts/listPost";
+import PostDetail from "./app/component/posts/Post";
 
 if (localStorage.token) {
   setAuthToken(localStorage.token);
@@ -51,6 +53,9 @@ function App() {
               path="/edit-experience"
               component={editExperience}
             ></Route>
+            <Route exact path="/post" component={listPost} />
+
+            <Route exact path="/post/detail" component={PostDetail} />
           </Switch>
         </section>
       </Router>

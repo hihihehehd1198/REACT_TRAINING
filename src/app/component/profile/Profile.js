@@ -9,7 +9,6 @@ const Profile = ({ findProfileWithUserId, profile: { profile, loading } }) => {
   useEffect(() => {
     findProfileWithUserId(id);
   }, [loading]);
-
   return (
     profile && (
       <div>

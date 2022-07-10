@@ -74,9 +74,7 @@ const postReducer = (state = initialState, action) => {
         ...state,
         post: {
           ...state.post,
-          comments: state.post.comments.filter(
-            (comment) => comment._id !== payload
-          ),
+          comments: [...payload],
         },
         loading: false,
       };

@@ -71,9 +71,12 @@ export const getPostWithUserId = (userId) => async (dispatch) => {
 };
 
 //remove coment with comment id
-export const removeComment = (commentId) => async (dispatch) => {
+export const removeComment = (postId, commentId) => async (dispatch) => {
   try {
-    const res = await axios.delete(`/api/posts/deleteComment/${commentId}`);
+    const body = {
+      idCommentDelete: commentId,
+    };
+    const res = await axios.post(`/api/posts/deleteComment/${postId}`, body);
     dispatch({
       type: REMOVE_COMMENT,
       payload: res.data.body,

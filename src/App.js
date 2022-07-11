@@ -53,9 +53,9 @@ function App() {
               path="/edit-experience"
               component={editExperience}
             ></Route>
-            <Route exact path="/post" component={listPost} />
+            <PrivateRoute exact path="/post" component={listPost} />
 
-            <Route exact path="/post/detail" component={PostDetail} />
+            <PrivateRoute exact path="/post/:id" component={PostDetail} />
           </Switch>
         </section>
       </Router>

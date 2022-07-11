@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
-// import { getAllPost } from "../../actions/profile";
+import { connect, useDispatch } from "react-redux";
+import { GET_POST } from "../../actions/types";
 import { getAllPost, likePost, unLikePost } from "../../actions/post";
 const ListPost = ({
   getAllPost,
@@ -10,8 +10,12 @@ const ListPost = ({
   unLikePost,
   likePost,
 }) => {
-  //   const dispatch = useDispatch();
-
+  const dispatch = useDispatch();
+  const setStatePost = (id) => {
+    const post = posts.find((x) => (x._id = id));
+    // console.log("posts navigate : ", posts);
+    dispatch({ type: GET_POST, payload: post });
+  };
   useEffect(() => {
     getAllPost();
     console.log(posts);
@@ -49,7 +53,7 @@ const ListPost = ({
               return (
                 <div className="post bg-white p-1 my-1">
                   <div>
-                    <Link to="profile.html">
+                    <Link to="/profile">
                       <h4>{post.name}</h4>
                     </Link>
                   </div>
@@ -74,7 +78,13 @@ const ListPost = ({
                     >
                       <span>Unlike </span>
                     </button>
-                    <Link to="/post/detail" className="btn btn-primary">
+                    <Link
+                      to={`/post/${post._id}`}
+                      className="btn btn-primary"
+                      onClick={() => {
+                        setStatePost(post._id);
+                      }}
+                    >
                       Comments :
                       <span className="comment-count">
                         {post.comments?.length || 0}

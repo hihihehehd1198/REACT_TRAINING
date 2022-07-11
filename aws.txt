@@ -1,0 +1,264 @@
+SSL - Basics 
+-   An ssl Certificate allows traffic between your clients and your load balancer
+to be encrypted in transit 
+-   SSL refer to Secure Sockets Layer , used to Encrypt connections 
+-   TLS refers to transport Layer security , which is a newer version
+-   Nowadays , TLS cert are mainly used , but SSL refer
+-   Public ssl cert ase issues by (CA)
+-   SSL cert have an exp ( you set ) and must be renewed
+Load Balancer - SSL Cert 
+-   The load Balancer uses an X509 cert (SSL/TLS)
+-   You can manage cert usign ACM
+-   You can create upload your own cert alternatively
+    HTTPS Listener : 
+    +   You must specify a default cert
+    +   add an option of cert when support multi domain
+    +   Clients can use SNI(Server Name indi) to specify hostname
+    +   ability to specify a security policy to support SSL/TLS
+
+SSL -  Server Name Indication
+-   SNI solves the problem of loading multi SSL cert onto one web Server
+-   It's a "newer" protocol, and requies the client to indicate the hostname
+    of the target server in the initial SSL 
+-   The server will then find the correct cert , of return the default one
+    Note : 
+        +   Only work for ALB-NLB
+        +   Does not work for CLB
+ELB - SSL cert
+-   Classic Load Balancer (v1)
+    +   support only one SSL cert
+    +   Must use multi CLB for multi host with multi cert
+-   Application Load Balancer (v2)
+    +   Support multi Listener with multi SSL cert
+    +   Uses SNI to make it work
+-   Network Load Balancer (v2)
+    +   Support multi Listener with multi cert 
+    +   Users SNI
+
+Connection Draining
+-   Feature naming
+    +   Connection Draining : CLB
+    +   Deregistration : ALB - NLB
+-   Time to complete "in flight request " while the instance is 
+    de-registering or unhealthy
+-   Stops sending new request to ec2 instance which ism  de-registering
+-   Between 1 to 3600 sec (default as 300 , 0 as disabled)
+-   Set to a low value if your request are short 
+Auto scalling Group? 
+-   The goal of Auto Scalling Group(ASG) is to :
+    +   Scale out (add EC2 instance) to match an increased Load
+    +   Scale in (remove EC2 instance) to match a decrease load 
+    +   Ensure we have a minium and a maximum number of ec2 instances running
+    +   Auto matically register new instances to a load balancer 
+    +   Re-create an EC2 instance in case a previous one is terminated
+-   ASG are free ( but as pay for the underlying EC2 )
+Auto Scalling Group Attr
+-   A Lunch Template 
+    +   AMI  and Instance Type 
+    +   EC2 User Data
+    +   EBS volumes
+    +   Security Groups
+    +   SSH key pair 
+    +   IAM roles for Your EC2 instances
+    +   Network + Subnet Infor 
+    +   Load Balancer infor 
+-   Minsize / Maxsize / Intial Capacity
+-   Scaling Policies
+Auto Scalling - CloudWatch Alarams and Scalling 
+-   It is possible to scale an ASG based on CloudWatch alarms 
+-   An Alarm monitors a metric (such as Average CPU , or a custom metric)
+-   Metrics such as Average CPU are computed for the overall ASG instances
+-   Based on the alarm : 
+    +   We can create scale-out policies (increase  number instance)
+    +   We can create scale- policies (decrease  number instance)
+
+ASG - Dynamic Scalling Policies
+-   Target Tracking Scaling
+-   Simple/Step Scalling 
+    +   When a Cloudwatch alarm is trigger ( >  : add unit )
+    +   When a Cloudwatch alarm is trigger ( <  : remove)
+-   Scheduled Application  
+    +   Anticipate a scaling based on known usage pattern 
+
+ASG - Predictive Scalling 
+    +   Predictive scalling : continuously forecast load and schedule scaling ahead
+
+ASG - Good metrics 
+    -   CPU Utilization : Average CPU utilization across your instances 
+    -   RequestCountPerTarget : to make sure the number of requests per EC2 instances is stable 
+    -   Average Network I/O 
+    -   Any custom metric (using Cloudwatch)
+ASG - Scalling Coldowns
+-   After a scaling activity happens, you are in the 
+    cooldown period (default 300s )
+-   During the coldonw period, the ASG will not 
+    launch or terminate additional instances
+-   Advice : Use a ready-to-use API to reduce config time in 
+    order to be serving req faster and reduce the cooldown period
+
+ASG for SA
+-   ASG default Termination Policy 
+    1 : find the az which has the most number of instance
+    2 : if there are multi instance in the az to choose from,
+    delete the one with the oldest launch config
+-   ASG tries the balance the number of instances across AZ by default 
+
+ASG for SA - Lifecycle hook 
+-   By default as soon as an instance is launched in an ASG it's in service
+-   You have the ability to perform extra steps before instance goes in service
+-   you have the ability to perform some actions before instance is terminated
+
+ASG for SA - Launch Template vs Launch configurations
+-   Both:
+    +   ID of the Amazon Machine Image (AMI) , the intsance type , a key pair 
+    security groups and the other param(e.g : ec2 user-data) that you
+    use to launch EC2 instance 
+-   Launch Config (legacy)
+    +   Must be re-created every time 
+-   Launch Template (newer)
+    +   Can have multiple versions
+    +   Create pram subsets
+    +   Provision using both On-Demand and Spot instances
+    +   Can use T2 unlimited burst Feature
+    +   Recommended by AWS going forward
+
+Section 9 : 
+AWS RDS Overview
+-   RDS stands for Relational Database service
+-   it's a managed DB service for DB use SQL as a query language
+-   It allows you to create databases in the cloud that are managed by AWS
+    +   Postgres
+    +   MySQL
+    +   MariaDB
+    +   Oracle
+    +   Microsoft SQL Server
+    +   Aurora (not critial remember it )
+
+Advantage over using RDS versus deploying DB on ec2
+-   RDS us a managed service:
+    +   Automated provisioning , OS patching 
+    +   Continuous backups and restore to specific timestamp
+    +   Monitoring dashboards 
+    +   Read replicas for improved read performance
+    +   Multi AZ setup for DR (Disaster Recovery)
+    +   Scaling capability (vertical and horizontal)
+    +   Storage backed by EBS (gp2 or io1)
+-   BUT you CAN't SSH into your instances
+
+RDS backups
+-   Backups are automatically enabled in RDS
+-   Automated backups: 
+    +   Daily full backup of the database 
+    +   Transaction logs are backed-up by RDS every 5 minutes
+    => ability to restore to any point in time (5 min)
+    +   7 days retention (can be increased to 35 days )
+-   DB Snapshots:
+    +   Manually triggered by the user
+    +   Retention of backup for as long as you want
+
+RDS -  Storage Auto Scalling 
+-   Helps you increase Storage on your RDS DB instance dynamically
+-   When RDS detects you are running out of free database storage, it scales auto
+-   Avoid manually scaling your database storage
+-   you have to set MAXIMUM STORAGE THRESHOLD 
+-   Automatically modify storage if :
+    +   Free storage is less than 10% of allocated storage
+    +   Low-storage lasts at least 5 min
+    +   6 hours have passed since last modification
+-   Useful for appications with unpredictable workloads
+-   Supports all RDS database engines
+
+RDS Read Replicas for read scalability
+-   Up to 5 Read Replicas
+-   With in AZ, Cross Az or Cross Region
+-   Replication is ASYNC so read are eventtually consistent
+-   Replicas can be promoted to their own DB
+
+RDS Read Replicas - Use Cases 
+-   You have o production database that is taking on normal load
+-   You want to run a reporting application to run some analytics
+-   You create a read replica to run the new workload there
+-   The production application is unaffected
+-   Read replicas are used for SELECT (=read) only kind of statements
+    (not INSERT, UPDATE , DELETE)
+
+RDS - Network Cost
+
+-   same AZ with other region : free (vd : us-east-1a <> us-east-1b)
+-   other AZ same region : not free (vd : us-east-1a <> eu-west-1b)
+
+RDS Multi AZ (Disaster Recovery)
+-   SYNC Replication
+-   One DNS name - automatic app failover to standby
+-   Increase availability
+-   Failover in case of loss of AZ, loss of network, instance or storage failure
+-   No manual intervention in apps
+-   Not used for scaling
++   Note : The Read Replicas be setup as MULTI AZ for Disaster Recovery
+
+RDS - FROM Single-AZ to multi AZ
+-   Zero downtime operation
+-   Just click on "modify" for the database config
+-   The following happens internally
+    +   A snapshot is taken
+    +   A new DB is restored from the snapshot in a new AZ 
+    +   Synchonization is established between the two databases 
+
+RDS Security - Encryption
+-   At rest encryption 
+    +   Possibility to encrypt the master and replicas with AWS-AES 256
+    +   Encryption has to be defined at lunch time
+    +   If the master is not encrypted , the read replicas cannot be encrypted
+    +   Transparent Data Encryption (TDE) available for Oracle and SQL Server
+-   In Flight encryption
+    +   SSL cert options with trust cert when connecting to database
+    +   Provide SSL options with trust cert when connecting to database 
+    +   To enforce SSL:
+        *   PostgreSQL : _ssl = l in the AWS RDS Console
+        *   My SQL : with in the DB  .... REQUIRE SSL
+RDS Encryption operations 
+-   Encrypting RDS Backups
+    +   Snapshots of un-encrypted RDS databases are un-encrypted
+    +   Snapshots of encrypted RDS databases are encrypted
+    +   Can copy a snapshot into an encrypted one 
+-   To encrypt an un-encrypted RDS database 
+    +   Create a snapshot of the un-encrypted database
+    +   Copy the snapshot and enable encryption for the snapshot
+    +   Restore the database from the encrypted snapshot
+    +   Migrate applications to the new database , and delete the old database
+
+RDS Security - Network & IAM
+-   Network Security
+    +   RDS databases are usually deployed within a private subnet, not a public one
+    +   RDS security work by leveraging security groups- it controls
+    with IP/Security group can COMMUNICATE with RDS 
+-   Access Management 
+    +   IAM policies help control who can manage AWS RDS
+    +   Traditional Username and Password can be used to login into the database 
+    +   IAM-based authen can be used to login into RDS MySQL  & PostgreSQL
+
+RDS - IAM authen
+-   IAM database authen work with MYSQL AND POSTGRESQL
+-   You don't need a password, just an authen token obtained thorugh IAM - RDS API
+-   Auth token expired when after 15min
+-   Benefits : 
+    +   Network in/out must be encrypted using SSL
+    +   IAM to centrally manage users instead of DB 
+    +   Can Ieverage IAM Roles and EC2 Instance profiles for easy integration 
+
+RDS Security - Summary 
+-   Encryption at rest
+    +   Is done only when you first create the DB instance
+    +   or : unencrypted DB => snapshot => copy snapshot as encrypted
+        => create DB from snapshot 
+-   Your responsibility
+    +   Check the ports / IP / Security group inbound rules in DB's SG
+    +   In-database user creation and permissions or manage through IAM
+    +   Creating a database with or without public acess 
+    +   Ensure param group or DB is configured to only allow SSL 
+-   AWS responsibility
+    +   No SSH access 
+    +   No manual DB patching 
+    +   No manucal OS patching 
+    +   No way to audit the underlying instance
+    

@@ -288,7 +288,7 @@ RDS -  Storage Auto Scalling
 -   Supports all RDS database engines
 
 RDS Read Replicas for read scalability
--   Up to 5 Read Replicas
+-   UP TO 5 READ REPLICAS
 -   With in AZ, Cross Az or Cross Region
 -   Replication is ASYNC so read are eventtually consistent
 -   Replicas can be promoted to their own DB
@@ -435,3 +435,148 @@ RDS Security - Summary
     +   In-database user creation and permissions or manage through IAM
     +   Creating a database with or without public access
     +   Ensure param group or DB is config to only allow SSL connection
+-   AWS responsibility
+    +   No SSH access
+    +   No manual DB patching 
+    +   No manual OS patching
+    +   No way to audit the underlying instance
+
+Amazon Aurora 
+-   is proprietary from AWS (not open source)
+-   Postgres and MYSQL are both supported as Aurora DB
+-   Aurora is "AWS cloud optimized" and claims 5x perform improvement over MYSQL
+    on RDS , over 3x the performance of Postgres on RDS
+-   Aurora storage automatically grows in increments of 10gb , upto 128gb
+-   Aurora can have 15 replicas while MYSQL as 5,and the replication process faster
+-   Failover in Aurora is instantaneous. It's HA native
+-   Aurora costs more than 20% RDS - but is more efficient 
+
+Aurora high availability and read scaling 
+-   6 copies of your data across 3az
+    +   3 copies out of 6 need for read
+    +   self healing with peer-to-peer replication
+    +   Storage is striped across 100s of volumes
+-   One Aurora instance takes writes ( master )
+-   Automated failover for master in less than 30s 
+-   master + up to 15 Aurora Read Replicas serve needs
+-   Support for cross region replication
+
+Feature of Aurora
+-   Automatic failover
+-   Backups and Recovery
+-   Isolation and security
+-   Industry compliance
+-   Push - button scaling 
+-   Automated Patching with Zero Downtime
+-   Advanced Monitoring 
+-   Routine Maintenance
+-   Backtrack: restore data at any point of time without using backup
+
+Aurora security
+-   Similar to RDS b.c uses the same engines
+-   Encryption at rest using KMS
+-   Automated backups , snapshots and replicas are also encrypted
+-   Encryption in flight using SSL 
+-   POSSIBILITY TO AUTHEN USING IAM TOKEN 
+-   You are responsible for protecting the instance with security groups 
+-   you can't SSH
+
+Aurora Serverless 
+-   Automated database instantiation and auto - scaling based on actual usage
+-   good for infrequent , intermittent or unpredictable workload
+-   no capability planning need
+-   pay per seconds , can be more cost effect
+Global Aurora 
+-   Aurora Cross Region read replicas 
+    +   Useful for disaster Recovery
+    +   Simple to put in place
+-   Aurora Global database (Recommended)
+    +   I primary Region (read/write)
+    +   Up to 5s (read-only) regions , replication lag is less than I second
+    +   Up to 15 Read replica per second region
+    +   Helps for decrasing latency
+    +   Promoting another region  has an RTO of < I minutes
+
+Aurora ML 
+-   Enables you to add ML-based prediction to your application via SQL
+-   Simple , optimized, and secure integration between Aurora and AWS ML services
+-   Supported services 
+    +   Amazon Sage maker
+    +   Amazon comprehend
+-   You don't need to have ML experience 
+-   Use cases : fraud detection , ads targeting , sentiment analysis
+    product Recommendedations 
+
+Amazon ElastiCache Overview
+-   The same way RDS is to get managed Relational Database...
+-   ElastiCache is to get managed Redis or Memcached 
+-   Caches are in-memory databases with really high performance , low latency
+-   Helps reduce load off of databases for read intensive workloads
+-   Helps make your application stateless
+-   AWS takes care of OS Maintenance / patching , optimizations , setup, config
+    Monitoring , failure recovery and backups 
+-   USING ELASTICACHE INVOLVES HEAVY APP CODE CHANGES 
+
+ElastiCache SA - DB Cache 
+-   Application qurey ElastiCache, if not available
+    get from RDS and store in ElastiCache 
+-   Helps relieve load in RDS
+-   Cache must be an invalidation strategy to make sure only the most
+    current data is used in there 
+
+ElastiCache SA - User Session store
+-   User logs into any of the application
+-   The application writes the session data into ElastiCache
+-   The user hits another instance of our application
+-   The instance retrieves the data and the user is already logged in 
+
+ElastiCache -  Redis vs Memcached
+Redis : 
+-   Multi AZ with Auto-failover 
+-   Read Replicas to scale read and have high availability
+-   Data Durability using AOF persistence
+-   BACKUP AND RESTORE FEATURE 
+Memcached : 
+-   Multi-node for partitioning of data (sharding )
+-   No high availability (replication)
+-   Non persistent
+-   No backup and restore 
+-   Multi  threaded achitecture 
+
+ElastiCache - Cache Security
+-   All caches in ElastiCache
+    +   DO NOT SUPPORT IAM AUTHEN
+    +   Iam policies on ElastiCache are only useds for AWS API-level security
+-   REDIS AUTH 
+    +   You can set a "password/token" when you create a redis cluster
+    +   This is an extra level of security for your cache 
+    +   Support SSL in flight encryption
+-   Memcached
+    +   Supports SASL-based authen
+
+Patterns for ElastiCache
+-   LAZY LOADING  
+-   WRITE THROUGH
+-   SESSION STORAGE "
+-   Quote:There are only two hard things in Computer Science:cache invalid & naming
+
+ElastiCache - Redis UseCase 
+-   Gaming Leaderboards are computationally complex
+-   Redis Sorted sets gurantee both uniqueness and element ordering 
+-   Each time a new element added, it's ranked in realtime, then add in correct order
+
+Note for session 9 : LIST PORT Familiar
+-   You should be able to differentitate between an important HTTPS - 443
+    and Database port ( PostgreSQL  - 5432 )
+-   IMPORTANT PORTS : 
+    +   FTP : 21
+    +   SSH : 22
+    +   SFTP : 22 (same as SSH)
+    +   HTTP : 80
+    +   HTTPS : 443
+    RDS DATABASE PORTS : 
+    +   PostgreSQL : 5432
+    +   MySQL : 3306
+    +   Oracle RDS : 1521
+    +   MariaDB : 3306
+    +   Aurora: MySQL + PostgreSQL

@@ -774,7 +774,7 @@ Domain Registar vs DNS service
     +   But every Domain Registar usually comes with some DNS Features 
 
 Keyword has remember
-webflow pattern 
+Section 11 : aws webflow pattern 
 pattern 1 :
 -   public vs Private IP and ec2
 -   Elastic IP vs Route 53 vs Load balancer
@@ -836,3 +836,179 @@ Elastic Beanstalk - support platforms :
 -   Go, JAVA SE, JAVA TOMCAT, net core linux, net win server,node, php, .py, ruby
 -   Packer builder, single - multi container docker, pre config docker 
 -   if not supported , you can write your custom platform (advanced )
+
+Section 12 : Amazon s3 introduction 
+Section introduction:
+-   S3 is one of the main building block of AWS
+-   it's advertised as " infinitely scaling " storage
+-   it's widely popular and deserves its own section
+
+Amazon s3 overview - Buckets
+-   Amazon s3 allows people to store object (files) in "buckets" (directories)
+-   Buckets must have a GLOBALLY UNIQUE NAME
+-   Buckets are defined at the region level
+-   Naming convention
+    +   No uppercase
+    +   No underscore
+    +   3-63 character long 
+    +   Not an IP 
+    +   Must start with lowercase letter or number
+
+Amazon S3 Overview - Objects
+-   Objects (files) have a key
+-   The key is the FULL path :
+    +   s3://my-bucket/𝐦𝐲_𝐟𝐢𝐥𝐞.𝐭𝐱𝐭
+    +   s3://my-bucket/𝐦𝐲_𝐟𝐨𝐥𝐝𝐞𝐫/𝐚𝐧𝐨𝐭𝐡𝐞𝐫_𝐟𝐨𝐥𝐝𝐞𝐫/𝐦𝐲_𝐟𝐢𝐥𝐞.𝐭𝐱𝐭
+-   The key is composed of 𝗣𝗿𝗲𝗳𝗶𝘅 + 𝑜𝑏𝑗𝑒𝑐𝑡 𝑛𝑎𝑚𝑒
+    +   s3://my-bucket/𝗺𝘆_𝗳𝗼𝗹𝗱𝗲𝗿/𝗮𝗻𝗼𝘁𝗵𝗲𝗿_𝗳𝗼𝗹𝗱𝗲𝗿/𝑚𝑦_𝑓𝑖𝑙𝑒.𝑡𝑥𝑡
+
+-   There's no conecpt of "directories" within buckets 
+-   Just keys with very long names that contain slashes
+-   Objects values are the content of the body:
+    +   Max Objects Size is 5TB (5000GB)
+    +   If uploading more than 5GB , must use "multi-part upload"
+-   Metadata (list of text key / value pairs - system of user metadata)
+-   Tags (Unicode key / value pair - up to 10) - useful for security / lifecycle
+-   Version ID (if versioning is enabled)
+
+Amazon s3 - Versioning 
+
+-   You can version your files in Amazon s3
+-   It is enabled at the BUCKET LEVEL
+-   Same key overwrite will increment the "version" : 1,2,3...
+-   It is best practice to version your buckets 
+    +   Protect against unintended deletes 
+    +   Easy roll back to previous version
+-   Notes : 
+    +   Any File that is not ver prior to enabling versioning will've ver "null"
+    +   Suspending versioning does not delete the previous versions
+
+
+Encrypt s3 bucket data 
+SSE - S3
+-   SSE - S3 : encryption using keys handled & managed by amazon s3
+-   Object is encrypted server side
+-   AES - 256 encryption type 
+-   Must set header : "x-amz-server-side-encryption":"AES256"
+
+SSE - KMS
+-   SSE - KMS : encryption using keys handled & managed by KMS
+-   KMS Advantages : user control + audit trail
+-   Object is encrypted server side
+-   Must set header : "x-amz-server-side-encryption":"aws:kms"
+
+SSE - C
+-   SSE - C : server-side encryption using data keys fully managed by the
+    customer outside of AWS 
+-   Amazon S3 does not store the encryption key you provide
+-   HTTPS must be used 
+-   Encryption key must provided in HTTP headers , for every HTTP req made
+
+Client side encryption
+-   Client library such as the Amazon s3 Encryption Client
+-   Client must encrypt data themselves before sending to S3
+-   Client must decrypt data themselves when retrieving from S3
+-   Customer fully manages the keys and encryption cycle
+
+Encryption in transit (SSL/TLS )
+-   Amazon s3 exposes : 
+    +   HTTP endpoint : non encrypted
+    +   HTTPS endpoint : encryption in flight 
+-   You're free to use the endpoint you want, but HTTPS is Recommended
+-   Most clients would use the HTTPS endpoint by default 
+-   HTTPS is mandatory for SSE-C 
+-   Encryption in flight is also called SSL/TLS 
+
+S3 Security
+-   USER BASED 
+    +   Iam policies - Which Api call should be allow a specific user from IAM 
+-   RESOURCE BASED 
+    +   Bucket Policies - bucket wide rules from s3 console - allow cross account
+    +   Object access control list (ACL) - finer grain
+    +   Bucket Access Control List (ACL) - less common
+-   Not : an IAM principal can access an S3 object if 
+    +   the user IAM permissions allow it OR the resource policy ALLOW it
+    +   AND there's no explict DENY
+
+S3 bucket policies
+-   JSON based policies
+    +   Resource : bucket and object
+    +   Actions : Set of API to Allow or Deny
+    +   Effect: ALlow / Deny
+    +   Principal : the account or user to apply the policy to 
+-   Use S3 bucket for policy to : 
+    +   Grant public access to the bucket 
+    +   Force object to be encrypted at upload
+    +   Grant access to another account 
+
+Bucket settings for BLock Public Access 
+-   block public access to buckets and objects granted through 
+    +   new access control lists (ACLs)
+    +   any access control lists (ACLs)
+    +   new public bucket or access point policies 
+-   Block public and cross account access to buckets and objects through any
+    public bucket or access point policies
+-   These settings were created to prevent company data leaks
+-   If you know your bucket should be public , leave these on 
+-   Can be set at the account level
+
+S3 Security - Other 
+-   Networking :
+    +   Supports VPC endpoints 
+-   Loggin and Audit :
+    +   S3 Access logs can be stored in other S3 bucket 
+    +   API calls can be logged in AWS CloudTrail
+-   User Security
+    +   MFA Delete : MFA can be required in versioned buckets to delete objects
+    +   Pre-Signed URLs: URLs that are valid only for a limited time 
+
+S3 Websites
+-   S3 can host static websites and have them accessiable on the www
+-   The website URL will be 
+    +   <bucket-name>.s3-website-<AWS-region>.amazonaws.com
+-   If u get a 403 (forbidden) err,make sure the bucket policy allows public reads 
+
+CORS - Explained
+-   An origin is a scheme (protocol) , host (domain) and port 
+    +   E.g: https://www.example.com (implied port is 443 for HTTPS, 80 for HTTP)
+-   CORS means Cross - Origin Resource Sharing
+-   WEB BROWSER based mechanism allow request other origin while visit main origin
+-   Same origin : h̵t̵t̵p̵:̵/̵/̵e̵x̵a̵m̵p̵l̵e̵.̵c̵o̵m̵/app1 & h̵t̵t̵p̵:̵/̵/̵e̵x̵a̵m̵p̵l̵e̵.̵c̵o̵m̵/app2
+-   Different origin : h̵t̵t̵p̵:̵/̵/̵e̵x̵a̵m̵p̵l̵e̵1̵.̵c̵o̵m̵  & h̶t̶t̶p̶:̶/̶/̶o̶t̶h̶e̶r̶.̶e̶x̶a̶m̶p̶l̶e̶1̶.̶c̶o̶m̶
+-   The request won't be fulfilled UNLESS the other origin allows for the 
+    request , using CORS HEADERS ( vd : ACCESS-CONTROL-ALLOW-ORIGIN)
+
+S3 CORS 
+-   If a client does a cross-origin req on s3 bucket, we need enabled CORS header
+-   It's a popular exam question
+-   You can allow for a specific origin or for * (all origins , all method)
+
+Amazon s3 - Consistency Model
+-   Strong consistency as of December 2020
+-   After a:
+    +   Successful write of a new object (new PUT)
+    +   or an overwrite or delete of an existing object (overwrite PUT or DELETE)
+-   ...any:
+    +   Subsequent read request immediately RECEIVES LATEST VERSION of the object
+    +   Subsequent list request immediately reflects changes
+-   Available at no additional cost without any performance impact
+
+AWS EC2 Instance Metadata
+-   AWS EC2 Instance Metadata is powerful but one of least known feat to dev
+-   It Allows AWS EC2 instances to "learn about themselves" without using an 
+    IAM ROles that purpose
+-   The URL is 𝟭𝟲𝟵.𝟮𝟱𝟰.𝟭𝟲𝟵.𝟮𝟱𝟰/𝗹𝗮𝘁𝗲𝘀𝘁/𝗺𝗲𝘁𝗮-𝗱𝗮𝘁𝗮
+-   u can retrieve IAM Role name from metadata, but u CAN"T retrieve IAM policy
+-   Metadata = info about the EC2 instance
+-   Userdata = launch script of the EC2 instance
+
+AWS SDK Overview 
+-   What if u want perform actions on AWS directly from your app code (use CLI)
+-   U can use an SDK
+-   Offical SDKs are ...
+    +   JAVA,Net,Node,PHP,PYTHON (named boto3 / botocore),GO,RUBY,C++ 
+-   We have to use AWS SDK when coding against AWS Services such as DynamoDB
+-   Fun fact... the AWS CLI uses the PYTHON SDK (BOTO3)
+-   The exam expects you to know when you shoule use an SDK
+-   We will preactice the AWS SDK when we get to LAMBDA FUNCTION
+-   Good to know: if u don't specify or config default region => us-east-1

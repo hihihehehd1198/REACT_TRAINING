@@ -772,3 +772,67 @@ Domain Registar vs DNS service
     +   Update NS records on 3rd party website to use Route53 NAME SERVERS 
     +   DOMAIN REGISTRAR != DNS service
     +   But every Domain Registar usually comes with some DNS Features 
+
+Keyword has remember
+webflow pattern 
+pattern 1 :
+-   public vs Private IP and ec2
+-   Elastic IP vs Route 53 vs Load balancer
+-   Route 53 TTL , A records and alias records
+-   Maintain ec2 intsance vs ASG (Auto scalling groups)
+-   Multi AZ to survice disaster
+-   ELB health checks
+-   Security Group rules
+-   Reservation of Capacity for costing savings when possible
+-   considers 5 pillars for a well achitected application:
+-   costs, performance , reliability , security , operational excellence
+pattern 2 : 
+-   ELB sticky session
+-   Web client for storing cookies and making our web app stateless
+-   ElastiCache
+    +   For storing sessions 
+    +   For caching data from RDS 
+    +   Multi AZ
+-   RDS
+    +   For storing user data
+    +   Read replica for scaling reads 
+    +   Multi AZ for disater recovery
+-   Tight Security with security group referencing each other 
+pattern 3 : 
+-   Aurora database to have easy multi az and read replica
+-   Storing data in EBS (single instance app)
+-   vs Storing data in EFS ( distribution app)
+
+
+Instantiating app quickly
+-   EC2 Instances : 
+    +   USE GOLDEN AMI
+    +   BOOTSTRAP USING USER DATA 
+    +   HYBRID 
+-   RDS databases : 
+    +   Restore from a snapshot : the database will have schemas and data ready
+-   EBS volumes:
+    +   Restore from snapshot: the disk will already be formatted and have data!
+
+Elastic Beanstalk - Overview
+-   Elastic Beanstalk is a developer centric view of deploying application on AWS
+-   It uses all the component's we've seen before : EC2, ASG , ELB, RDS , ...
+-   Managed service
+    +   Automatically handles capacity provisioning, load balancing, scaling
+        application health monitoring , instance config ...
+    +   Just the application code is the responsibility of the developer
+-   We still have full control over the configuration
+-   Beanstalk is free but you pay for the underlying instance
+
+Elastic Beanstalk - components 
+-   Application: collection of Elastic Beanstalk component
+-   Application version : an iteration of your application code
+-   Environments
+    +   Collection of AWS resource running an application version 
+    +   Tier : Web Server Environment Tier & Worker Environment Tier
+    +   You can create multi environments
+
+Elastic Beanstalk - support platforms : 
+-   Go, JAVA SE, JAVA TOMCAT, net core linux, net win server,node, php, .py, ruby
+-   Packer builder, single - multi container docker, pre config docker 
+-   if not supported , you can write your custom platform (advanced )

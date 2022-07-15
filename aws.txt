@@ -1012,3 +1012,203 @@ AWS SDK Overview
 -   The exam expects you to know when you shoule use an SDK
 -   We will preactice the AWS SDK when we get to LAMBDA FUNCTION
 -   Good to know: if u don't specify or config default region => us-east-1
+
+Section 14: S3 MFA- Delete 
+-   MFA (multi factor authentication) forces user to generate a code on a device
+    (usually a mobile phone or hardware) before doing important operations on S3
+-   To use MFA - Delete , enabled versioning on the s3 bucket
+-   You will need MFA to 
+    +   permanently delete an object version
+    +   suspend versioning on the bucket
+-   You won't need MFA for 
+    +   enabling versioning 
+    +   listing deleted versions 
+-   ONLY THE BUCKET OWNER (ACC ROOT) can enable/disable MFA-Delete
+-   MFA - Delete currently can only be enabled using the CLI
+ 
+ S3 Default Encryption vs Bucket Policy
+-   One way to "force encryption" is to use a bucket policy and refuse any API
+    call to PUT an S3 object without encryption header
+-   Another way is to use the "default encryption " option in s3
+-   Note : Bucket Policies are evaluated before default encryption
+
+S3 Access Logs 
+-   For audit purpose , you may want to log all access to s3 buckets 
+-   Any request made to S3 , from any account , authorzied or denied
+    will be logged into another s3 bucket 
+-   That data can be analyzed using data analysis tools ...
+-   Or amazon athena as we'll see later in this section 
+-   The log format is at : 
+    𝗵𝘁𝘁𝗽𝘀://𝗱𝗼𝗰𝘀.𝗮𝘄𝘀.𝗮𝗺𝗮𝘇𝗼𝗻.𝗰𝗼𝗺/𝗔𝗺𝗮𝘇𝗼𝗻𝗦𝟯/𝗹𝗮𝘁𝗲𝘀𝘁/𝗱𝗲𝘃/𝗟𝗼𝗴𝗙𝗼𝗿𝗺𝗮𝘁.𝗵𝘁𝗺𝗹
+
+S3 Access Logs : Warning 
+-   Do not set your logging bucket to be the montiored bucket 
+-   It will create a logging loop, and 𝘆𝗼𝘂𝗿 𝗯𝘂𝗰𝗸𝗲𝘁 𝘄𝗶𝗹𝗹 𝗴𝗿𝗼𝘄 𝗶𝗻 𝘀𝗶𝘇𝗲 𝗲𝘅𝗽𝗼𝗻𝗲𝗻𝘁𝗶𝗮𝗹𝗹𝘆
+
+S3 Replication (CRR - SRR)
+-   𝗠𝘂𝘀𝘁 𝗲𝗻𝗮𝗯𝗹𝗲 𝘃𝗲𝗿𝗶𝘀𝗼𝗻𝗶𝗻𝗴 𝗶𝗻 𝘀𝗼𝘂𝗿𝗰𝗲 𝗮𝗻𝗱 𝗱𝗲𝘀𝘁𝗶𝗻𝗮𝘁𝗶𝗼𝗻 
+-   Cross Region Replication ( CRR )
+-   Same Region Replication ( SRR )
+-   Buckets can be in different accounts 
+-   Copying is ASYNC
+-   Must give proper IAM permisson to S3 
+-   𝘾𝙍𝙍 - 𝙐𝙨𝙚 𝙘𝙖𝙨𝙚𝙨 : compliance, lower latency access, replication across acc
+-   𝙎𝙍𝙍 - 𝙐𝙨𝙚 𝙘𝙖𝙨𝙚𝙨 : log aggregation , live replication between
+    production and test account 
+
+S3 Replication - Notes 
+-   After activating , only new objects are replicated 
+-   Optionally, you can replicate existing objects using S3 Batch Replication
+    +   Replicates existing object and objects that failed replication 
+-   For DELETE operations : 
+    +   Can replicate delete markers from source to target ( optional setting )
+    +   Deletions with a version ID are not replicated (avoid malicious deletes)
+-   There is no " chaning " of replication 
+    +   if bucket I has replication into bucket 2, which has replication into b3 
+    +   then object created in bucket are not replication to b3 
+
+S3 pre-signed URL
+-   Can generated using SDK or CLI 
+-   For downloads ( CLI )
+-   For uploads ( must using SDK )
+-   Valid for default 3600s , can change timeout with --expries-in TIME_BY_S arg 
+-   Users given pre-signed URL inherit permission of persion who Generate URL
+    for GET - PUT 
+-   Examples : 
+    +   Allow only logged in - users to download previum video on your s3 bucket
+    +   Allow an ever changing list of users to download files by gen URL dynamic
+    +   Allow temp a user upload a file to precise loaction on your bucket 
+
+S3 Storage Classes 
+-   Amazon S3 Standard - General Purpose 
+-   Amazon s3 Standard - Infrequent Access 
+-   Amazon s3 One Zone infrequent Access 
+-   Amazon s3 Glacier Instant Retrieval
+-   Amazon s3 Glacial Flexible Retrieval
+-   Amazon s3 Glacial Deep Archive
+-   Amazon s3 interlligent Tiering 
+-   Can more between class manually or using s3 LIFECYCLE CONFIG
+
+S3 Durability and Avalability
+-   Durability:
+    +   High durability (99.99% || 9's) of object accross multi AZ 
+    +   If you store 10 milion object with S3 , u can average expect to incur
+        a loss of single object ones every 10k years 
+    +   Same for all storage class
+-   Avalability
+    +   Measures how readily Available a service is 
+    +   Varies depending on storage class 
+    +   Ex : S3 Standard has 99.99% availability = not 53 minutes / year (err) 
+
+S3 Standard - General Purpose 
+-   99.99% availability
+-   User for requently access data
+-   low latency and high thoughput 
+-   Sustain 2 concurrent failure 
+-   UseCase : Big Data anylitics , mobile - gaming app , content distribution...
+
+S3 Storage access - Infrequent access 
+-   For data that is less frequently required  ,but requires access when need 
+-   Lower cost than S3 Standard
+
+-   𝗔𝗺𝗮𝘇𝗼𝗻 𝘀𝟯 𝗦𝘁𝗮𝗻𝗱𝗮𝗿𝗱 𝗶𝗻𝗳𝗿𝗲𝗾𝘂𝗲𝗻𝘁 𝗮𝗰𝗰𝗲𝘀𝘀 (𝗦𝟯 𝗦𝘁𝗮𝗻𝗱𝗮𝗿𝗱 -𝗜𝗔)
+    +   99.9% availability
+    +   Use Cases : Disaster Recovery, backups 
+-   𝐀𝐦𝐚𝐳𝐨𝐧 𝐬𝟑 𝐎𝐧𝐞 𝐙𝐨𝐧𝐞 𝐈𝐧𝐟𝐫𝐞𝐪𝐮𝐞𝐧𝐭 𝐀𝐜𝐜𝐞𝐬𝐬 ( 𝐎𝐧𝐞 𝐙𝐨𝐧𝐞 - 𝐈𝐀)
+    +   High durability (99.99%) in a single AZ ; data lost when AZ is destroyed
+    +   99.95 availability
+    +   Use cases : Story secnondary backup copies of on - premise data 
+        or data you can recreate  
+-   Amazon s3 Glacier Storage Classes 
+    +   Low - cost object storage meant for archiving / backup
+    +   Pricing : price for storage + object retrieval cost 
+-   Amazon S3 Glacier Instant Retrieval 
+    +   Milisecond retrieval , great for data accessed once a quarter
+    +   Minium storage duration of 90 days
+-   Amazon S3 Glacier Flexible Retrieval (formerly Amazon s3 Glacier)
+    +   Expedited (1 to 5 min), Standard (3 to 5 hr),Bulk (5 to 12hr) - free
+    +   Minium storage duration of 90 days
+-   Amazon S3 Glacier Deep Archive - for long term to storage 
+    +   Standard ( 12hr ) , Bulk (48hr )
+    +   Minium storage duration of 180 days
+
+S3 Interlligent - Tiering 
+-   Small monthly montioring and auto - tiering fee 
+-   Moves objects automatically between Access Tier based on usuage
+-   There are no retrieval charges in S3 Interligent - Tiering 
+-   Frequent Access tier (automatic): default tier 
+-   Infrequent Access tier (automatic): objects not accessed for 30days 
+-   Archive Instant Access Tier(automatic) : objects not accessed for 90days 
+-   Archive Access tier : 90 > 700+ days
+-   Deep Archive Access tier : 120 > 700+ days
+
+S3 Lifecycle rules
+-   𝗧𝗿𝗮𝗻𝘀𝗶𝘁𝗶𝗼𝗻 𝗮𝗰𝘁𝗶𝗼𝗻𝘀: if defines when object're transitioned another storage class
+    +   Move objects to Standard IA class 60 days after creation 
+    +   Move to Glacier for archiving after 6 month
+-   𝗘𝘅𝗽𝗶𝗿𝗮𝘁𝗶𝗼𝗻 𝗮𝗰𝘁𝗶𝗼𝗻𝘀 : configure object to expire (delete) after some time 
+    +   access log file can be delete when out of 365 days 
+    +   𝗰𝗮𝗻 𝗯𝗲 𝘂𝘀𝗲𝗱 𝘁𝗼 𝗱𝗲𝗹𝗲𝘁𝗲 𝗼𝗹𝗱 𝘃𝗲𝗿𝘀𝗶𝗼𝗻 𝗼𝗳 𝗳𝗶𝗹𝗲 (𝗶𝗳 𝘃𝗲𝗿𝘀𝗶𝗼𝗻𝗻𝗶𝗻𝗴 𝗶𝘀 𝗲𝗻𝗮𝗯𝗹𝗲𝗱 )
+    +   Can be used to delete incomplete multi-part uploads
+-   Rules can be created for a certain prefix (ex - S3://mybucket/mp3/*)
+-   Rules can be created for certain objects tags (ex - Department : Finance)
+
+S3 Lifecycle Rules - Scenario I
+-   Your application on EC2 creates images thumbnails after profile photos are 
+    Uploaded to Amazon s3 . These thumbnails can be easilly created , and only
+    need to be kept for 45 days . The source images should be able to be
+    immediately retrieved for these 45 days, and afterwards , the user can wait
+    up to 6 hr . How would u design this ? 
+-   Answer :
+    +   S3 source images can be on STANDARD , with a lifecycle config transition
+        them to GLACIER after 45 days 
+    +   S3 thumbnails can be on ONEZONE_IA with a lifecycle config expire them
+        after 45 days 
+S3 Lifecycle Rules - Scenario 2
+-   A rule in your company states that you sould be able to recover your deleted
+    S3 objects immediately for 15 days, although this may appen rarely.After this
+    time , And for up to 1 years, deleted object sould be recoveable with in 48 hr
+    Solution : 
+    +   You enabled s3 versioning in order to have object versions, so that 
+        "delete objects" are in fact hidden by "delete marker" and can be recovered
+    +   You can transition these "noncurrent versions" of the object to S3_IA
+    +   You can transition afterwards these "noncurrent versions" to DEEP_ARCHIVE
+
+S3 Analytics - Storage Class analysis
+-   You can setup S3 analytics to help determine when to stransition objects from 
+    Standard to Standard_IA
+-   Does not work for ONEZONE_IA or GLACIER 
+-   Report is updated daily 
+-   Takes about 24h to 48hr to first start 
+-   Good first step to put together Lifecycle Rules (or improve them)!
+
+S3 - Baseline Performance 
+-   Amazon s3 automatically scales to high request rates, latency 100-200ms 
+-   Your application can archieve at least 3,500 PUT/COPY/POST/DELETE and
+    5,500 GET/HEAD requests per second per prefix in a bucket
+-   There are no limits to the number of prefixes in a bucket 
+-   Example (Object path => prefix)
+    +   bucket/folder1/sub1/file => folder1/sub1
+-   If you spread reads across all four prefixes evenly, you can achieve 22,000
+    requests per second for GET and HEAD 
+
+S3 - KMS Limitation 
+-   If you use SSE - KMS, you may be impacted by the KMS limits
+-   When u upload, it calls the 𝗚𝗲𝗻𝗲𝗿𝗮𝘁𝗲𝗗𝗮𝘁𝗮𝗞𝗲𝘆 KMS API 
+-   When u download, it calls the 𝗗𝗲𝗰𝗿𝘆𝗽𝘁 KMS API 
+-   Count towards the KMS quota per s (5500, 10k, 30k req/s on the region )
+-   you can request a quota using Service Quota Console 
+
+S3 Performance 
+-   Multi-part upload 
+    +   Recommended for files > 100MB, must use for files > 5GB
+    +   Can help parallelize uploads (speed up transfers)
+-   S3 transfer Acceleration 
+    +   Increase transfer speed by transferring file to an AWS edge location which
+        will forward the data to the s3 bucket in the target region
+    +   Compatible with multi-part upload 
+
+S3 Performance - S3 Byte -Range fetches 
+-   parallelize gets by requesting specific byte ranges 
+-   better resilience in case of failures 
+-   CAN BE USED TO SPEED UP DOWNLOAD

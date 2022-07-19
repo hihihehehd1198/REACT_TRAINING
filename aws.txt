@@ -1212,3 +1212,184 @@ S3 Performance - S3 Byte -Range fetches
 -   parallelize gets by requesting specific byte ranges 
 -   better resilience in case of failures 
 -   CAN BE USED TO SPEED UP DOWNLOAD
+
+S3 Select & Glacier Select 
+-   Retrieve less data using SQL by performming server side filtering 
+-   can filter by col & row ( simple SQL statements )
+-   less network transfer , less cpu cost client side 
+
+s3 Event Notification
+-   s3:ObjectCreated , s3:ObjectRemoved , s3: ObjectRestore, s3:Replication
+-   Object name filtering possible (*.jpg)
+-   Usecase : generate thumbnauls of images uploaded to s3 
+-   𝗖𝗮𝗻 𝗰𝗿𝗲𝗮𝘁𝗲 𝗮𝘀 𝗺𝗮𝗻𝘆 "𝘀𝟯 𝗲𝘃𝗲𝗻𝘁𝘀" 𝗮𝘀 𝗱𝗲𝘀𝗶𝗿𝗲𝗱 
+-   s3 event notification typlically deliver events in seconds but can 
+    sometimes take a minite of longer 
+
+s3 Event notifications with amazon EventBridge
+-   Advanced filtering option with JSON rules 
+-   multiple distinations
+-   EventBridge Capacibilities
+
+s3 Requester Pays 
+-   In general , bucket owners pay for all Amazon s3 storage and data transfer
+    const associated with thieir bucket
+-   With requester Pays buckets, the requester instead of the bucket owner
+    pay the const of req and the data download from the bucket 
+-   helpful when u want to share large datasets with author account 
+-   the quester muse e a auth 
+
+
+Amazon athena 
+-   SERVERLESS  query service to PERFORM ANALYTICS AGAINST S3 OBJECTS 
+-   Uses standard SQL language to query the files 
+-   Supports CSV, JSON, ORC, AVRO, and Parquet (built on Presto)
+-   Pricing: $5.00 per TB of data scanned 
+-   Use compressed or columnar data for cost savings (less scan)
+-   Use cases: Business intelligence / analytics / reporting ,...
+
+NOTE : ANALYZE DATA IN S3 USING SERVERLESS SQL , USE ATHENA
+
+S3 Object Lock (versioning must be enabled)
+-   Adopt a WORM (Write Once Read Many) model
+-   Block an object version deletion for a specificd amout of time
+-   Object retention:
+    +   Retention Period : specifies a fixed period
+    +   Legal Hold: same protection, no expiry date
+-   Modes:
+    +   Governance mode: users can't overwrite or delete an object version or
+        alter its lock settings unless they have special permissions
+    +   Compliance mode:a protected object version can't be overwritten or deleted
+        by any user, including the root user in your AWS account. When an object
+        is locked in compliance mode, its retention mode can't be changed, and its
+        retention period can't be shortened
+
+SECTION 15 : 
+AWS Cloud Front 
+-   (CDN) Content Delivery Network
+-   Improves read performance, content is cached at the edge
+-   216 Point of Presence globally (edge locations)
+-   DDoS protection, integration with Shield, AWS Webapp firewall
+-   can expose https and can talk to internal HTTPS backends 
+
+CloudFront - Origins 
+-   S3 bucket 
+    +   for distributing file and caching them at the edge
+    +   Enhanced security with Cloudfront OAI ( Origin Access Identity )
+    +   Cloudfront canbe used as an as ingress (to upload files to s3 )
+-   Custom origin(HTTP)
+    +   ALB (app load balancer)
+    +   ec2 instance 
+    +   s3 website 
+    +   Any HTTP backend u want 
+
+CloudFront Geo Restriction
+-   u can restrict who can access your distribution
+    +   whitelist 
+    +   blacklist 
+-   The "country" is determined using a 3rd party Geo-IP database 
+
+Cloudfront vs s3 cross region replication
+-   CloudFront :
+    +   Global edge network
+    +   file are cached by TTL (maybe a day)
+    +   𝗚𝗿𝗲𝗮𝘁 𝗳𝗼𝗿 𝘀𝘁𝗮𝘁𝗶𝗰 𝗰𝗼𝗻𝘁𝗲𝗻𝘁 𝘁𝗵𝗮𝘁 𝗺𝘂𝘀𝘁 𝗯𝗲 𝗮𝘃𝗮𝗶𝗹𝗮𝗯𝗹𝗲 𝗲𝘃𝗲𝗿𝘆𝘄𝗵𝗲𝗿𝗲
+-   S3 Cross Region Replication : 
+    +   Must be setup for each region you want replication to happens
+    +   Files are updated in near real-time 
+    +   Read only
+    +   𝗴𝗿𝗲𝗮𝘁 𝗳𝗼𝗿 𝗱𝘆𝗻𝗮𝗺𝗶𝗰 𝗰𝗼𝗻𝘁𝗲𝗻𝘁 𝘁𝗵𝗮𝘁 𝗻𝗲𝗲𝗱𝘀 𝘁𝗼 𝗯𝗲 𝗮𝘃𝗮𝗶𝗹𝗮𝗯𝗹𝗲 𝗮𝘁 𝗹𝗼𝘄-𝗹𝗮𝘁𝗲𝗻𝗰𝘆 𝗶𝗻 𝗳𝗲𝘄 𝗿𝗲𝗴𝗶𝗼𝗻𝘀
+
+CloudFront Signed URL / Signed Cookies 
+
+-   You want to distribute paid shared content to premium user over the world 
+-   we can use CloudFront sign URL / Cookie . We attach a policy with: 
+    +   Includes URL expiration
+    +   include ip range to access data from 
+    +   trusted signers 
+-   how long should url be valid for ? 
+    +   share content : make it short 
+    +   private content : you can make it last for years 
+-   Signed url = access to individual files 
+-   signed cookies = access to multiple files 
+
+CloudFront Signed URL vs S3 pre-signed URL 
+-   Cloudfront Signed URL :
+    +   Allow access to a path, no matter the origin
+    +   Account wide key-pair , only the root can manage it 
+    +   Can filter by ip, path , date, expiration
+    +   can leverage caching features 
+-   s3 pre-signed url 
+    +   Issue a request as the person who pre-signed the URL
+    +   Uses the IAM key
+    +   limited lifetime 
+
+CloudFront - Price Classes 
+-   you can reduce the number of edge location for COST REDUCTION
+-   Three price classes 
+    +   100  :  only the least exprensive regions 
+    +   200  :  most regions , but excludes the most exprensive regions 
+    +   all  :  all regions -> best performance
+
+CloudFront - multiple Origin 
+-   To route to different kind of origins based on the content type 
+-   Based on path pattern 
+    +   /images/*
+
+CloudFront - Origin Groups 
+-   To increase high - availability and do failover
+-   origin group : one primary and one  secnondary origin
+-   if the primary origin fail , use second origin
+
+CloudFront - Field Level Encryption
+-   protect user sensitive infor thorugh app stack
+-   adds an additional layer of security along with https 
+-   sensitive information encrypted at the edge close to user 
+-   uses asymmetric encryption
+-   Usage : 
+    +   Specify set of fields in POST request that u want to be encrypted 
+    +   specify to public key to encrypted them
+
+Global users for our application 
+-   You have deployed an application and have global user who want access
+-   They go over public internet, which can add litte latency due many hops
+-   We wish to go as fast as possible through AWS network minimize latency
+
+Unicast IP and Anycast IP 
+-   Unicast IP : one server holds one ip address
+-   Anycast IP : all servers holds the same ip client routes nearest one 
+
+AWS Global Accelerator 
+-   Leverage the AWS internal network to route to your application
+-   2 Anycast IP create for your application
+-   The Anycast IP send traffic directly to Edge Locations 
+-   The Edge locations send the traffic to your application
+
+AWS Global Accelerator 
+-   Works with 𝗘𝗹𝗮𝘀𝘁𝗶𝗰 𝗜𝗣 , 𝗘𝗖𝟮 𝗶𝗻𝘀𝘁𝗮𝗻𝗰𝗲𝘀 , 𝗔𝗟𝗕 , 𝗡𝗟𝗕, 𝗽𝘂𝗯𝗹𝗶𝗰 𝗼𝗿 𝗽𝗿𝗶𝘃𝗮𝘁𝗲 
+-   Consistent performance
+    +   intelligent routing to lowest latency and fast regional failover 
+    +   no issues with client cache 
+    +   Internal aws network
+-   Health Checks 
+    +   Global Accelerator perform a health check of your application
+    +   Helps make your application global
+    +   Great for Disaster recovery
+-   Security
+    +   only 2 external IP need to be whitelisted 
+    +   DDOS protection thanks to AWS shield 
+
+AWS Global Accelerator vs CloudFront 
+-   They both use AWS GLOBAL NETWORK and its edge location arround the world 
+-   Both services intergrate with AWS Shield for DDOS protect
+
+-   CloudFront :    
+    +   Improves performance for both cacheable content 
+    +   Content is served at the edge 
+-   Global Accelerator
+    +   Improves performance for a wide range for application over TCP or UDP
+    +   Proxying packets at the edge to app running in 1 of more aws regions 
+    +   Good fit for non-HTTP use cases, such as gaming (UDP),IOT,Voice over IP
+    +   Good for HTTP use case that requies static ip address 
+    +   Good for HTTP use case that required deterministic fast regional failover
+    

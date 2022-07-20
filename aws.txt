@@ -1392,4 +1392,224 @@ AWS Global Accelerator vs CloudFront
     +   Good fit for non-HTTP use cases, such as gaming (UDP),IOT,Voice over IP
     +   Good for HTTP use case that requies static ip address 
     +   Good for HTTP use case that required deterministic fast regional failover
-    
+
+AWS Snow Family
+-   Highly - secure , portable devices to COLLECT AND PROCESS DATA AT THE EDGE
+    and MIGRATE DATA INTO AND OUT OF AWS 
+-   Data migration : snowcone , snowball edge , snowmobile 
+-   Edge computing : snowcone , snowball edge
+-   AWS Snow family : offline devices to perform data migrations 
+    if it takes more than a week to transfer over network, use Snowball devices
+
+Snowball Edge (for data transfers)
+-   Physical data transport solution : move TBs or PBs of data in or out of AWS
+-   Alternative to moving data over the network 
+-   Pay per data transfer job 
+-   Provide block storage and s3-compatible object storage 
+-   𝗦𝗻𝗼𝘄𝗯𝗮𝗹𝗹 𝗲𝗱𝗴𝗲 𝗦𝘁𝗼𝗿𝗮𝗴𝗲 𝗢𝗽𝘁𝗶𝗺𝗶𝘇𝗲𝗱
+    +   80𝘛𝘉 𝘰𝘧 𝘏𝘋𝘋 𝘤𝘢𝘱𝘢𝘤𝘪𝘵𝘺 for block volume and s3 compatible object storage 
+-   𝗦𝗻𝗼𝘄𝗯𝗮𝗹𝗹 𝗲𝗱𝗴𝗲 𝗖𝗼𝗺𝗽𝘂𝘁𝗲 𝗢𝗽𝘁𝗶𝗺𝗶𝘇𝗲𝗱
+    +   42𝘛𝘉 𝘰𝘧 𝘏𝘋𝘋 𝘤𝘢𝘱𝘢𝘤𝘪𝘵𝘺
+-   Use cases : Large data cloud migrations, DC decommission, disaster recovery
+
+AWS Snow Cone 
+-   𝗦𝗺𝗮𝗹𝗹, 𝗽𝗼𝗿𝘁𝗮𝗯𝗹𝗲 𝗰𝗼𝗺𝗽𝘂𝘁𝗶𝗻𝗴,𝗮𝗻𝘆𝘄𝗵𝗲𝗿𝗲,𝗿𝘂𝗴𝗴𝗲𝗱 & 𝘀𝗲𝗰𝘂𝗿𝗲,𝘄𝗶𝘁𝗵𝘀𝘁𝗮𝗻𝗱𝘀 𝗵𝗮𝗿𝘀𝗵 𝗲𝗻𝘃𝗶𝗿𝗼𝗻𝗺𝗲𝗻𝘁𝘀
+-   Light (4.5 pounds , 2.1 kg)
+-   8 TB mem of usable storage 
+-   Device use for edge computing , storage , and data transfer 
+-   use Snowcone where snowball does not fit 
+-   Must provide your own battery / cables
+-   Can be sent back to AWS offline, or connect it to internet and use
+    AWS DATASYNC to send data 
+
+AWS Snowmobile 
+-   Transfer exabytes of data 
+-   Each Snowmobile has 100PB of capacity 
+-   High security: temperature controlled, GPS, 24/7 video surveillance
+-   BETTER THAN SNOWBALL IF U TRANSFER MORE THAN 10 PBs
+
+Snow Family - Usage Process 
+1.  Request Snowball devices from AWS console for Delivery
+2.  Install the snowball client / AWS obs hub on your servers 
+3.  Connect the snowball to your servers and copy files using the client
+4.  Ship back the device when you're done 
+5.  Data will be loaded into s3 bucket 
+6.  Snowball is completely wiped 
+
+What is Edge Computing ? 
+-   Process data while it's being created on EDGE LOCATION 
+    +   A truck on the road, a ship on the sea, a mining station underground 
+
+-   These location may have 
+    +   Limited  / no internet access 
+    +   limited / no easy access to computing power
+-   We setup a 𝗦𝗻𝗼𝘄𝗰𝗼𝗻𝗲 / 𝗦𝗻𝗼𝘄𝗯𝗮𝗹𝗹 𝗘𝗱𝗴𝗲 device to do edge computing 
+-   use cases of edge computing 
+    +   preprocess data 
+    +   Machine learning at the edge 
+    +   Transcoding media streams 
+-   Eventually we can ship back device to AWS 
+
+SnowFamily - Edge Computing 
+-   SnowCone  (smaller )
+    +   2 CPUs , 4gb of mem , wire or wireless access 
+    +   USB-c Power using a cord or optional battery 
+-   Snowball Edge  - COMPUTE OPTIMIZED 
+    +   52 𝘷𝘊𝘗𝘜𝘴 , 208 𝘎𝘪𝘣 𝘰𝘧 𝘙𝘈𝘔
+    +   OPTIONAL GPU 
+    +   42 TB storage usable
+-   Snowball edge - STORAGE OPTIMIZED 
+    +   Up to 40 vCPUs, 80 Gib of RAM 
+    +   Object storage clustering avaliable 
+-   All : Can run ec2 instance - lambda function
+-   Long - term deployment options : 1 and 3 years discounted pricing 
+
+AWS OPSHub 
+-   Historically , to use Snow Family devices, your need CLI
+-   Today , u can use AWS OPSHub to manage your SnowFamily device
+    +   Unlocking and config single or clustered devices 
+    +   Transfering files 
+    +   Launching and managing instances running on Snow Family devices
+    +   Monitor device metrics
+    +   Launch compatible AWS services on your devices 
+
+Solition Architecture : Snowball into glacier 
+-   Snowball cannot import to glacier directly
+-   You must use S3 first , in combination with an s3 LIFECYCLE POLICY 
+
+    SNOWBALL => S3 => GLACIER
+
+Amazon SFX - overview 
+-   Launch 3rd party high-performance file system on aws 
+-   Fully managed service 
+
+Amazon SFX for windows (File Server)
+-   EFS is a shared POSIX system for linux system 
+-   FSX for Windows is a fully managed Windows file system share drive 
+-   Supports SMB protocol & windows NTFS 
+-   Microsoft Active Directory intergration , ACLs , user Quotas 
+-   CAN BE MOUNTED ON LINUX / EC2 INSTANCES 
+
+-   Scale up to 10s of GB/s, million of IOPS, 100s PB of data
+-   Storage options :
+    +   SSD - Latency sensitive workloads
+    +   HDD - broad spectrum of workloads 
+-   Can be accessed from your on-premise infrastructure
+-   Can be config to be MULTI-AZ 
+-   Data is backup daily to s3 
+
+Amazon FSx for Lustre 
+-   Lustre is a type of parallel distributed file system
+    for large - scale computing 
+-   The name Lustre is devired from "linux " and cluster 
+-   Machine Learning , (HPC) High Performance Computing 
+-   Video processing , Financial Modeling , Electronic Design Automation 
+-   Scales up to 100s GB/s, millions of IOPS, sub-ms latencies 
+-   Storage Options :
+    +   SSD - Low latency , IOPS intensive workloads, small & random file
+    +   HDD - Throughput - intensive workloads, large & sequential file 
+-   SCAMLESS INTERGRATION WITH s3
+    +   Can "Read s3" as a file system (through FSx)
+    +   Can write the output of the computation back to s3 
+-   Can be used from on-premise server 
+
+FSx File System Deployment Options 
+-   Scratch File System
+    +   Temporary storage 
+    +   Data is not replicated 
+    +   High burst (6x faster , 200MBps per Tib)
+    +   Usage : Short -term processing , optimize costs 
+-   Persistent File system 
+    +   Long - term storage 
+    +   Data is replicated within same AZ 
+    +   Replace failed files within minutes 
+    +   Usage : Long-term  processing , sensitive data 
+
+Hybrid Cloud for storage 
+-   AWS is pushing for "Hybrid cloud "
+    +   Part of your infrastructureis on the cloud 
+    +   Part of your infrastructureis on premise
+-   This can be due to 
+    +   Long cloud migrations 
+    +   Security requirements 
+    +   Complice requirements 
+    +   IT strategy
+-   S3 is a proprietary storage technology (unlike NFS/EFS)
+-   AWS Storage Gateway
+
+AWS Storage Gateway
+-   Bridge between on-permise data and cloud data in s3
+-   Use cases: disaster recovery, backup & restore, tiered storage
+-   3 types of storage gateway
+    +   File gateway
+    +   Volume gateway
+    +   Tape gateway
+
+-   Exam Tip : you need to know the difference all 3 type 
+
+FILE GATEWAY 
+-   Configured s3 bucket are accessiable using NFS AND SMB protocol
+-   Supports s3 standards , s3 IA , s3 ONEZONE_IA
+-   Bucket access using IAM roles for each File gateway
+-   most recently used data is cached in the file gateway 
+-   Can be mounted an many servers 
+-   𝗜𝗻𝘁𝗲𝗿𝗴𝗿𝗮𝘁𝗲𝗱 𝘄𝗶𝘁𝗵 𝗔𝗰𝘁𝗶𝘃𝗲 𝗗𝗶𝗿𝗲𝗰𝘁𝗼𝗿𝘆 (𝗔𝗗) for user authen
+
+VOLUME GATEWAY 
+-   Block storage is ISCI protocol backed by s3 
+-   Backed by EBS snapshots which can help restore premise volume
+-   CACHE VOLUMES:low latency to most recent data 
+-   Stored Volumes:entired dataset is on premise,sheduled backup to s3
+
+TAPE GATEWAY 
+-   Some companies have backup processes using physical tapes 
+-   With tape gateway, companies use the same precess but, in the cloud 
+-   (VTL) Virtual Tape Library , backed by s3 and glacier 
+-   Backup data using existing tape-based process 
+-   work with leading backup software vendors 
+
+Storage Gateway - Hardware appliance 
+-   Using Storage Gateway means you need on permises virtualization
+-   Otherwise, you can use a 𝗦𝘁𝗼𝗿𝗮𝗴𝗲 𝗚𝗮𝘁𝗲𝘄𝗮𝘆 𝗛𝗮𝗿𝗱𝘄𝗮𝗿𝗲 𝗔𝗽𝗽𝗹𝗶𝗮𝗻𝗰𝗲
+-   you can buy it an amazon.com
+-   Work with File Gateway, Volume Gateway, Tape Gateway
+-   Has a require CPU, mem,net ,SSD cache 
+-   Helpful for daily NFS backup in small data centers 
+
+AWS Storage gateway summary 
+Examtip : READ THE QUESTION WELL , IT WILL HINT AT WHICH GATEWAY TO USE
+-   On-permise data to the clooud => storage gateway
+-   File access / NFS => File gateway
+-   Volumes / blockStorage / isCsi => Tape gateway
+-   No on premises virtualization => hardware Appliance 
+
+Amazon FSx File Gateway 
+-   Native access to Amazon FSx for Windows File Server
+-   LOCAL CACHE FOR FREQUENTLY ACCESSES DATA 
+-   Windows native compatibility
+-   useful for group file share and home directories 
+
+AWS Transfer Family 
+-   A fully - managed service for file transfers into and out of Amazon
+    S3 or Amazon EFS using the FTP protocol
+-   Supported Protocols 
+    +   AWS transfer for FTP 
+    +   AWS transfre for FTPs 
+    +   AWS transfre for SFTP
+-   Managed infrastructure, Scalable,Reliable, Highly Available (multi-AZ)
+-   Pay per provisioned endpoint per hour + data transfer in GB
+-   Store and manage users crediental within the service
+-   Intergrate with existing authen system
+-   Usage : sharing files, public dataset CRP, ERP
+
+Storage Comparison
+-   𝗦𝟯 : Object storage 
+-   𝗚𝗹𝗮𝗰𝗶𝗲𝗿 : Object Archival
+-   𝗘𝗙𝗦 : Network file system for Linux instance , Posix filesystem
+-   𝗙𝗦𝘅 𝗳𝗼𝗿 𝗪𝗶𝗻𝗱𝗼𝘄𝘀 : Network file system for windows servers 
+-   𝗙𝗦𝘅 𝗳𝗼𝗿 𝗟𝘂𝘀𝘁𝗿𝗲: high performance computing linux file System
+-   𝗘𝗯𝘀 𝘃𝗼𝗹𝘂𝗺𝗲𝘀 : network storage for one ec2 instance at a time 
+-   𝗜𝗻𝘀𝘁𝗮𝗻𝗰𝗲 𝗦𝘁𝗼𝗿𝗮𝗴𝗲: Physical storage for your Ec2 instance (high IOPS)
+-   𝗦𝘁𝗼𝗿𝗮𝗴𝗲 𝗚𝗮𝘁𝗲𝘄𝗮𝘆: File gateway , volume gateway, tape gateway 
+-   𝗦𝗻𝗼𝘄𝗯𝗮𝗹𝗹 / 𝗦𝗻𝗼𝘄𝗺𝗼𝗯𝗶𝗹𝗲: to move large amout of data to the cloud, physically
+-   𝗗𝗮𝘁𝗮𝗯𝗮𝘀𝗲: for specific workloads, usually with indexing and querying

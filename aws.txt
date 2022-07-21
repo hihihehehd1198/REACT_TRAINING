@@ -1613,3 +1613,302 @@ Storage Comparison
 -   𝗦𝘁𝗼𝗿𝗮𝗴𝗲 𝗚𝗮𝘁𝗲𝘄𝗮𝘆: File gateway , volume gateway, tape gateway 
 -   𝗦𝗻𝗼𝘄𝗯𝗮𝗹𝗹 / 𝗦𝗻𝗼𝘄𝗺𝗼𝗯𝗶𝗹𝗲: to move large amout of data to the cloud, physically
 -   𝗗𝗮𝘁𝗮𝗯𝗮𝘀𝗲: for specific workloads, usually with indexing and querying
+
+SECTION 19: 
+What's Serverless
+-   Serverless is a new paradigm in which the developer don't have to manage
+-   They just deploycode 
+-   They just deploy ... functions ! 
+-   Initially... Serverless == FaaS
+-   Serverless was pioneered by AWS lambda but now also includes anything
+    that's managed : "databases, messaging , storage , etc "
+-   𝗦𝗲𝗿𝘃𝗲𝗿𝗹𝗲𝘀𝘀 𝗱𝗼𝗲𝘀 𝗻𝗼𝘁 𝗺𝗲𝗮𝗻 𝘁𝗵𝗲𝗿𝗲 𝗮𝗿𝗲 𝗻𝗼 𝘀𝗲𝗿𝘃𝗲𝗿𝘀 
+    it means you just don't manage / provision / see them
+
+Serverless in AWS 
+-   AWS Lambda
+-   Dynamo DB
+-   AWS Coginto
+-   AWS API GATEWAY
+-   Amazon s3
+-   AWS SNS & SQS 
+-   AWS Kinesis Data firehose 
+-   Aurora serverless 
+-   Step functions 
+-   Fargate 
+
+Why AWS lambda 
+-   EC2 :
+    +   Virtual server on the Cloud 
+    +   Limited by ram and cpu
+    +   continuously running 
+    +   Scaling means intervnetion to add/remove servers 
+-   Lambda :
+    +   Virtual functions - no server to manage 
+    +   Limited by time ( 15min)
+    +   Run on demand 
+    +   Scaling is automated 
+
+Benefits of AWS Lambda 
+-   Easy pricing 
+    +   Pay per request and compute time 
+    +   Free tier of 1 million lambda req and 400k gb of compute time 
+-   Integrated with the whole AWS suite of services 
+-   Intergrated with many programming languages 
+-   Easy montioring through AWS CloudWatch
+-   Easy to get more resources per functions
+-   Increasing RAM will also improve CPU and network 
+
+AWS Lambda language support 
+-   C#  (.Net core , PowerShell)
+-   Nodejs 
+-   PYTHON
+-   JAVA (Java 8 + )
+-   Golang
+-   Ruby
+-   Custom runtime API 
+
+-   Lambda container Image
+    +   The container image must implement the lambda runtime API
+    +   ECS / Fargate is prefered for running arbitrary docker images 
+
+Lambda Pricing : example 
+-   Pay per CELLS :
+    +   first 1million req free 
+    +   0.2 per 1 million req there after 
+-   Pay per DURATION 
+    +   400k GB-seconds of compute time per month it FREE 
+    +   == 400k seconds if function is 1GB RAM 
+    +   == 3200000 seconds if function is 128MB RAM 
+    +   After that $1.00 for 600k GB-seconds 
+-   it is ususally VERY CHEAP to run AWS LAMBDA so it's very popular 
+
+AWS Lambda limits to Know - PER REGION 
+-   EXECUTION 
+    +   Memory allocation : 128MB- 10 gb
+    +   Maximum excution time : 15min
+    +   Environment var (4kb)
+    +   Disk capacity in the "function container " 512MB
+    +   Concurrency executions : 1000
+-   DEPLOYMENT 
+    +   Lambda function deployment size (zip) : 50MB
+    +   Lambda function uncompressed size (code + depends as not zip) : 250MB
+    +   can use the/tmp directory to load other file at startup
+    +   Environment var (4kb)
+
+Lambda @ edge 
+-   when u can use Lambda @ edge :
+    DEPLOY LAMBDA FUNCTION ALONGSIDE YOUR CLOUDFRONT CDN
+    +   build more responsive app
+    +   you don't manage servers , Lambda is deployed globally
+    +   Customize the CDN content 
+    +   Pay only for want you use 
+
+-   You can use to change CloudFront request and responses :
+    +   After CloudFront receives a request from a viewer
+    +   Before Cloudfront forwards the request to the origin
+    +   After cloudFront receives the response from the origin
+    +   Before CloudFront forwards the response to the viewer
+-   You can also generate res to viewers without ever sending the req the origin
+
+-   Use Cases : 
+    +   Website Security and Privacy
+    +   Dynamic web app at the EDGE 
+    +   Search Engine Optimization (SEO)
+    +   Interlligently Route Accross Origins and Data Centers 
+    +   Bot Mitigation at the Edge
+    +   Real-time Image Transformation 
+    +   A/B Testing 
+    +   User authen and Author 
+    +   User Prioritization
+    +   User Tracking and Analytics
+
+Amazon DynamoDB
+-   Fully managed , highly avaliable with replication accross multi AZ 
+-   No SQL database - not a Relational database 
+-   Scales to massive workloads, distributed database 
+-   Million of request per seconds,trillions of row, 100s of TB of storage
+-   Fast and consistent in perform 
+-   Integrated with IAM for security, auther and administration
+-   Enables event driven programming with Dynamodb Streams
+-   Low cost and Auto scalling Capacibilities
+
+DynamoDB - Basics
+-   Dynamodb is made of TABLES 
+-   Each table has a PRIMARY KEYS 
+-   Each table can have an infinite number of items 
+-   Each item has ATTRIBUTES 
+-   maximum size of an item is 400kb
+-   Data types support are : 
+    +   Scalar Types : String, NUmber , null,Boolean, binary
+    +   documents Types : List ,Map
+    +   Set types : String set , Number Set , Binary Set
+
+DynamoDB - Read / Write Capacity Modes 
+-   Control how you manage your table's capacity
+-   𝗣𝗿𝗼𝘃𝗶𝘀𝗶𝗼𝗻𝗲𝗱 𝗺𝗼𝗱𝗲 (default)
+    +   You specify the number of reads/write per second 
+    +   You need to plan capacity beforehand 
+    +   Pay for provisioned Read Capacity Units(RCU)& Write Capacity Units
+    +   Possibility to add 𝐴𝑢𝑡𝑜 𝑠𝑐𝑎𝑙𝑙𝑖𝑛𝑔 mode for RCU - WCU 
+-   𝗢𝗡-𝗱𝗲𝗺𝗮𝗻𝗱 𝗺𝗼𝗱𝗲 
+    +   Read/writes automatically scale up/down with your workloads 
+    +   No capacity planning need 
+    +   Pay for what you use , more exprensive
+    +   Great for unpredictable workload
+
+DynamoDB Accelerator (DAX)
+
+-   Fully managed, highly avaliable, seamless in-memory cache for DynamoDB
+-   𝗛𝗲𝗹𝗽 𝘀𝗼𝗹𝘃𝗲 𝗿𝗲𝗮𝗱 𝗰𝗼𝗻𝗴𝗲𝘀𝘁𝗶𝗼𝗻 𝗯𝘆 𝗰𝗮𝗰𝗵𝗶𝗻𝗴
+-   Microseconds latency for cached data
+-   Doesn't require application login modification
+-   TTL cache for 5 min
+
+DynamoDB Streams 
+-   Ordered stream of item-level modifications (create/update/delete)
+-   Stream records can be:
+    +   Sent to Kinesis Data Streams 
+    +   Read by AWS Lambda 
+    +   Read by Kinesis Client Library applications 
+-   Data retention for up to 24 hours 
+-   Use cases :
+    +   React to changes in real-time 
+    +   Analytics
+    +   Insert into derivative tables 
+    +   Insert into ElasticSearch 
+    +   Implement cross region replication
+
+Dynamodb Global Tables 
+-   Make a DynamoDB table accessible with LOW LATENCY in multiple regions
+-   Active - Active replication
+-   Applications can READ and Write to the table in any region
+-   Must enable DynamoDB streams as a Pre requisite 
+
+Dynamodb - Time to live (TTL )
+-   Automatically delete item after an expiry timestamp
+-   Use cases: reduce stored data by keeping only current items,
+    adhere to regulatory obligations , ....
+
+Dynamodb - Indexes 
+-   Global Secondary Indexes (GSI) & Local secondary Indexes (LSI)
+-   High level : Allow to QUERY on ATTRIBUTES other than Primary key
+
+AWS API Gateway
+-   AWS Lambda + API gateway : no infrastructure to manage
+-   Support for the Websocket protocol
+-   Handle API versioning (v1,v2,...)
+-   Handle different environments( dev,test,prod )
+-   Handle security(authen and author )
+-   Create API keys , handle request throttling 
+-   Swagger / Open API import to quickly define APIs 
+-   Transform and validate requests and responses 
+-   Generate API and SDK spcifications 
+-   Cache API responses 
+
+API Gateway - Intergrations High Level
+-   LAMBDA FUNCTIONS 
+    +   Invoke lambda functions 
+    +   Easy way to expose REST API backend by AWS Lambda
+-   HTTP 
+    +   Expose HTTP endpoints in the backend 
+    +   Example : internal HTTP API on premise, Application, Load Balancer ,...
+    +   Why ? Add rate limiting, caching, user authentications, API keys, etc,...
+-   AWS SERVICE 
+    +   Expose any AWS API throught the API Gateway? 
+    +   Example : Start an AWS Step function workflow , post a message to SQS
+    +   Why ? Add authen, deploy publicly, rate control...
+
+API Gateway - Enpoint Types 
+-   EDGE OPTIMIZED (DEFAULT): For global clients 
+    +   Request are routed through the CloudFront Edge locations
+    +   The API Gateway still lives in ONLY ONE REGION 
+-   REGIONAL 
+    +   For clients within the same region 
+    +   Cloud manually combine with CloudFront 
+-   PRIVATE 
+    +   Can be accessed from your VPC using interface VPC enpoint (ENI)
+    +   Use a resource policy to define access 
+
+API Gateway - Security 𝗜𝗔𝗠 𝗣𝗲𝗿𝗺𝗶𝘀𝘀𝗶𝗼𝗻
+-   Create an IAM policy author and attach to USER / ROLE 
+-   API Gateway verified IAM permisson to pass the calling applications 
+-   Good to provice access within your own infrastructure
+-   lervages "Sig v4" capability where crediental IAM are in header 
+
+API Gateway - Security 𝗟𝗮𝗺𝗯𝗱𝗮 𝗮𝘂𝘁𝗵𝗼𝗿𝗶𝘇𝗲𝗿 (𝗙𝗼𝗿𝗺𝗲𝗹𝘆 𝗖𝘂𝘀𝘁𝗼𝗺 𝗔𝘂𝘁𝗵𝗼𝗿𝗶𝘇𝗲𝗿𝘀)
+-   User AWS Lambda to validate token in header when being passed 
+-   option to cache result of authentication
+-   Helps to use OAuth / SAMPL / 3rd party type of authentication
+-   Lambda must return an IAM policy for the user 
+
+API Gateway - Security 𝗖𝗼𝗴𝗶𝗻𝘁𝗼 𝗨𝘀𝗲𝗿 𝗣𝗼𝗼𝗹𝘀 
+-   coginto fully manage user lifecycle 
+-   API gateway verified identity automatically from AWS conginto
+-   no custom implementation required 
+-   𝗖𝗼𝗴𝗶𝗻𝘁𝗼 𝗼𝗻𝗹𝘆 𝗵𝗲𝗹𝗽𝘀 𝘄𝗶𝘁𝗵 𝗮𝘂𝘁𝗵𝗲𝗻  ,𝗻𝗼𝘁 𝗮𝘂𝘁𝗵𝗲𝗿 
+
+API Gateway - Security - Summary 
+-   IAM
+    +   Great for user / role already within AWS account 
+    +   Handle auther/ authen 
+    +   Leverage Sig v4 
+-   Custom author 
+    +   Great for 3rd party tokens 
+    +   very flexible in term of what IAM policy is returned 
+    +   Handle auther - authen 
+    +   Pay per lambda invocation 
+-   Coginto User Pool:
+    +   You manage your own user pool
+    +   no need to write any custom code 
+    +   must implementation auther in the backend 
+
+AWS Coginto
+-   we want to give user identity so that they can interact with our app
+-   COGINTO USER POOLS 
+    +   Sign in functionality for app users 
+    +   Intergrate with API gateway 
+-   COGINTO IDENTITY POOLS (FEDERATED IDENTITY)
+    +   Provide AWS Crediental user so thay can access AWS resources directly
+    +   intergrate with coginto user pool as in identity provider
+-   COGINTO SYNC 
+    +   Sync data from device to coginto 
+    +   decrepted and replaced by App sync 
+
+AWS Coginto User Pools (CUP)
+-   Create a serverless database of user for mobile app
+-   Simple login : user name (email) and password combination 
+-   Possibility to verified email / phone number and MFA 
+-   Can enable FEDERATED Identities 
+-   Send back a JWT TOKENS 
+-   Can be intergrated with API Gateway for authentication
+
+AWS Coginto - Ferderated Identity Pools 
+-   Goal : 
+    +   Provide direct access to AWS resources From Client Sides 
+-   How : 
+    +   login to FEDERATED identity provider - or remain anonymous 
+    +   Get Temporary AWS crediental back from the Ferderated identity pools
+    +   these crediental come with a pre-defined IAM policy stating
+        their permissions 
+Ex : Provide (temporary) access to write to s3 bucket using facebook login 
+
+AWS Coginto SYNC 
+-   decrepted  - USE APP SYNC now 
+-   store preferences ,config , state of app 
+-   cross defined Synchonization
+-   offline capability
+-   REQIRES FEDERATED IDENTITY POOLS 
+-   Store data in dataset 
+-   Up to 20 dataset to synchonise 
+
+AWS SAM - Serverless application model
+-   Framework for developing and deploying serverless applications 
+-   All the config using YAML code 
+    +   Lambda functions 
+    +   DynamoDB tables 
+    +   API gateway 
+    +   Coginto userpools 
+-   SAM can help you to run LAMBDA , API GATEWAY , Dynamodb locally
+-   Sam can be used to CodeDeploy to deploy lambda functions 
+
